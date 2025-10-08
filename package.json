@@ -1,0 +1,19 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  
+  "scripts": {
+    "client": "npm run dev --prefix client",
+    "server": "npm run start --prefix server",
+    "start": "concurrently \"npm run server\" \"npm run client\""
+  }
+
+}
