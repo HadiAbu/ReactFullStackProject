@@ -8,15 +8,16 @@ import {
 } from "../validators/postsValidators.js";
 
 const router = express.Router();
+console.log(controller.getAllPosts);
 
 // Create
 router.post("/", validate(createPostSchema), controller.createPost);
 
 // Read list with pagination & filters
-router.get("/", validate(listPostsSchema, "query"), controller.listPosts);
+router.get("/", validate(listPostsSchema, "query"), controller.getAllPosts);
 
 // Read single
-router.get("/:id", controller.getPost);
+router.get("/:id", controller.getPostById);
 
 // Update partial
 router.patch("/:id", validate(updatePostSchema), controller.updatePost);

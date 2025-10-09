@@ -4,7 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 
-import postsRouter from "./routes/posts";
+import postsRouter from "./routes/posts.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
@@ -27,6 +27,15 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Routes
+app.use("/api", (req, res, next) => {
+  try {
+    if (req.originalUrl === "/api") {
+      return res.json({ message: "Welcome to the API" });
+    }
+  } catch (err) {
+    next(err);
+  }
+});
 app.use("/api/posts", postsRouter);
 
 // Healthcheck
