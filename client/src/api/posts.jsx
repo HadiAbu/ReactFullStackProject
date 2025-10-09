@@ -1,11 +1,25 @@
 import { api } from "./client";
 
+// Get all posts
 export const getPosts = async () => {
-  const res = await api.get("/posts");
-  return res.data;
+  try {
+    const response = await api.get("/posts");
+    console.log("HHHEEEEERRRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw error;
+  }
 };
 
-export const createPost = async (data) => {
-  const res = await api.post("/posts", data);
-  return res.data;
+// Create a new post
+export const createPost = async (postData) => {
+  try {
+    const response = await api.post("/posts", postData);
+    console.log("HHHEEEEERRRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+    return response.data;
+  } catch (error) {
+    console.error("Error creating post:", error);
+    throw error;
+  }
 };

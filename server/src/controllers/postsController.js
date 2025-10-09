@@ -16,27 +16,26 @@ function mapRow(row) {
 
 // ───────────────────────────────────────────────
 // GET /api/posts
-export async function getAllPosts(req, res, next) {
+export const getAllPosts = async (req, res) => {
+  console.log("TaCOSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
   try {
-    const { data, error } = await supabase
-      .from("posts")
-      .select("*")
-      .order("created_at", { ascending: false });
-
+    const { data, error } = await supabase.from("POST").select("*"); // match your table
     if (error) throw error;
 
-    res.json(data.map(mapRow));
+    console.log("Fetched posts:", data); // debug
+    res.json(data); // <-- MUST respond
   } catch (err) {
-    next(err);
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ error: err.message });
   }
-}
+};
 
 // GET /api/posts/:id
 export async function getPostById(req, res, next) {
   try {
     const { id } = req.params;
     const { data, error } = await supabase
-      .from("posts")
+      .from("POST")
       .select("*")
       .eq("id", id)
       .single();
@@ -66,7 +65,7 @@ export async function createPost(req, res, next) {
     } = req.body;
 
     const { data, error } = await supabase
-      .from("posts")
+      .from("POST")
       .insert([{ title, content, author, tags, published }])
       .select()
       .single();
@@ -90,7 +89,7 @@ export async function updatePost(req, res, next) {
     }
 
     const { data, error } = await supabase
-      .from("posts")
+      .from("POST")
       .update(updates)
       .eq("id", id)
       .select()
@@ -122,7 +121,7 @@ export async function replacePost(req, res, next) {
     } = req.body;
 
     const { data, error } = await supabase
-      .from("posts")
+      .from("POST")
       .update({
         title,
         content,
@@ -154,7 +153,7 @@ export async function deletePost(req, res, next) {
     const { id } = req.params;
 
     const { data, error } = await supabase
-      .from("posts")
+      .from("POST")
       .delete()
       .eq("id", id)
       .select()

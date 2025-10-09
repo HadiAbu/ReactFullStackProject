@@ -36,6 +36,7 @@ app.use("/api", (req, res, next) => {
     next(err);
   }
 });
+
 app.use("/api/posts", postsRouter);
 
 // Healthcheck
