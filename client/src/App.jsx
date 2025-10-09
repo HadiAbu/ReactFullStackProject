@@ -13,7 +13,6 @@ function App() {
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>Let's go for a hot ride..</h1>
       <p>{message}</p>
-      {console.log(message)}
     </div>
   );
 }

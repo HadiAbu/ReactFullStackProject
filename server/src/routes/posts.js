@@ -8,7 +8,6 @@ import {
 } from "../validators/postsValidators.js";
 
 const router = express.Router();
-console.log(controller.getAllPosts);
 
 // Create
 router.post("/", validate(createPostSchema), controller.createPost);
