@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PostList from "./components/PostList";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -13,6 +14,7 @@ function App() {
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>Let's go for a hot ride..</h1>
       <p>{message}</p>
+      <PostList />
     </div>
   );
 }
