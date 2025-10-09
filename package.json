@@ -6,13 +6,13 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "devDependencies": {
-    "concurrently": "^9.2.1"
-  },
   "scripts": {
     "client": "npm run dev --prefix client",
     "server": "npm run start --prefix server",
     "start": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   },
   "dependencies": {
     "helmet": "^8.1.0"

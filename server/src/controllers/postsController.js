@@ -1,6 +1,6 @@
-import { query } from "../db/index.js";
+import { supabase } from "../supabaseClient.js";
 
-// Utility: map DB row to response object (optional, can adjust)
+// Utility: map Supabase row to response object
 function mapRow(row) {
   return {
     id: row.id,
@@ -18,10 +18,14 @@ function mapRow(row) {
 // GET /api/posts
 export async function getAllPosts(req, res, next) {
   try {
-    const { rows } = await query(
-      "SELECT * FROM posts ORDER BY created_at DESC"
-    );
-    res.json(rows.map(mapRow));
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    res.json(data.map(mapRow));
   } catch (err) {
     next(err);
   }
@@ -31,9 +35,20 @@ export async function getAllPosts(req, res, next) {
 export async function getPostById(req, res, next) {
   try {
     const { id } = req.params;
-    const { rows } = await query("SELECT * FROM posts WHERE id = $1", [id]);
-    if (!rows[0]) return res.status(404).json({ error: "Post not found" });
-    res.json(mapRow(rows[0]));
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        return res.status(404).json({ error: "Post not found" });
+      }
+      throw error;
+    }
+
+    res.json(mapRow(data));
   } catch (err) {
     next(err);
   }
@@ -49,19 +64,16 @@ export async function createPost(req, res, next) {
       tags = [],
       published = false,
     } = req.body;
-    const sql = `
-      INSERT INTO posts (title, content, author, tags, published)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING *;
-    `;
-    const { rows } = await query(sql, [
-      title,
-      content,
-      author,
-      tags,
-      published,
-    ]);
-    res.status(201).json(mapRow(rows[0]));
+
+    const { data, error } = await supabase
+      .from("posts")
+      .insert([{ title, content, author, tags, published }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(201).json(mapRow(data));
   } catch (err) {
     next(err);
   }
@@ -71,33 +83,27 @@ export async function createPost(req, res, next) {
 export async function updatePost(req, res, next) {
   try {
     const { id } = req.params;
-    const fields = [];
-    const params = [];
-    let idx = 1;
+    const updates = { ...req.body, updated_at: new Date().toISOString() };
 
-    for (const [key, value] of Object.entries(req.body)) {
-      fields.push(`${key} = $${idx++}`);
-      params.push(value);
-    }
-
-    if (fields.length === 0) {
+    if (Object.keys(req.body).length === 0) {
       return res.status(400).json({ error: "No fields to update" });
     }
 
-    fields.push(`updated_at = now()`);
+    const { data, error } = await supabase
+      .from("posts")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
 
-    const sql = `
-      UPDATE posts
-      SET ${fields.join(", ")}
-      WHERE id = $${idx}
-      RETURNING *;
-    `;
+    if (error) {
+      if (error.code === "PGRST116") {
+        return res.status(404).json({ error: "Post not found" });
+      }
+      throw error;
+    }
 
-    params.push(id);
-    const { rows } = await query(sql, params);
-
-    if (!rows[0]) return res.status(404).json({ error: "Post not found" });
-    res.json(mapRow(rows[0]));
+    res.json(mapRow(data));
   } catch (err) {
     next(err);
   }
@@ -115,23 +121,28 @@ export async function replacePost(req, res, next) {
       published = false,
     } = req.body;
 
-    const sql = `
-      UPDATE posts
-      SET title=$1, content=$2, author=$3, tags=$4, published=$5, updated_at=now()
-      WHERE id=$6
-      RETURNING *;
-    `;
-    const { rows } = await query(sql, [
-      title,
-      content,
-      author,
-      tags,
-      published,
-      id,
-    ]);
+    const { data, error } = await supabase
+      .from("posts")
+      .update({
+        title,
+        content,
+        author,
+        tags,
+        published,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
 
-    if (!rows[0]) return res.status(404).json({ error: "Post not found" });
-    res.json(mapRow(rows[0]));
+    if (error) {
+      if (error.code === "PGRST116") {
+        return res.status(404).json({ error: "Post not found" });
+      }
+      throw error;
+    }
+
+    res.json(mapRow(data));
   } catch (err) {
     next(err);
   }
@@ -141,12 +152,21 @@ export async function replacePost(req, res, next) {
 export async function deletePost(req, res, next) {
   try {
     const { id } = req.params;
-    const { rows } = await query(
-      "DELETE FROM posts WHERE id = $1 RETURNING *",
-      [id]
-    );
 
-    if (!rows[0]) return res.status(404).json({ error: "Post not found" });
+    const { data, error } = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        return res.status(404).json({ error: "Post not found" });
+      }
+      throw error;
+    }
+
     res.status(204).send();
   } catch (err) {
     next(err);
