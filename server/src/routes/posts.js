@@ -13,7 +13,8 @@ const router = express.Router();
 router.post("/", validate(createPostSchema), controller.createPost);
 
 // Read list with pagination & filters
-router.get("/", validate(listPostsSchema, "query"), controller.getAllPosts);
+// router.get("/", validate(listPostsSchema, "query"), controller.getAllPosts);
+router.get("/", controller.getAllPosts);
 
 // Read single
 router.get("/:id", controller.getPostById);

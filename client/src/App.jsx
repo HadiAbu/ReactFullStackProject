@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import PostList from "./components/PostList";
+const backendUrl = import.meta.env.VITE_BACKEND_URL_API;
 
 function App() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api")
+    fetch(backendUrl)
       .then((res) => res.json())
       .then((data) => setMessage(data.message));
   }, []);

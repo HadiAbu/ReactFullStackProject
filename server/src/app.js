@@ -11,7 +11,15 @@ const app = express();
 
 // Basic security and parsing
 app.use(helmet());
-app.use(cors());
+// cors
+const corsOptions = {
+  origin: "*",
+  methods: "GET,PUT,POST,DELETE",
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+// we need cors inorder to be able to share resources across different ports and origins
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "10kb" }));
 
 // Logging only in non-test env
@@ -44,5 +52,9 @@ app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 // Error handler (last middleware)
 app.use(errorHandler);
+
+app.get("/", (req, res) => {
+  res.send("✅ Root route working!");
+});
 
 export default app;
