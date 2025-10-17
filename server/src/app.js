@@ -3,10 +3,21 @@ import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import dotenv from "dotenv";
+dotenv.config();
 
 import postsRouter from "./routes/posts.js";
 import errorHandler from "./middleware/errorHandler.js";
+import pool from "./db/index.js"; // Optional, to confirm connection
 
+(async () => {
+  try {
+    const res = await pool.query("SELECT NOW()");
+    console.log("🟢 Connected to database at:", res.rows[0].now);
+  } catch (err) {
+    console.error("🔴 Database connection failed:", err.message);
+  }
+})();
 const app = express();
 
 // Basic security and parsing

@@ -17,9 +17,11 @@ function mapRow(row) {
 // ───────────────────────────────────────────────
 // GET /api/posts
 export const getAllPosts = async (req, res) => {
-  console.log("TaCOSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+  console.log("TaCOSSSS"); // something is not right
+  // Debugging: Check if the request is reaching this point
+  console.log("Request received at /api/posts");
   try {
-    const { data, error } = await supabase.from("POST").select("*"); // match your table
+    const { data, error } = await pool.query("POST").select("*"); // match your table
     if (error) throw error;
 
     console.log("Fetched posts:", data); // debug

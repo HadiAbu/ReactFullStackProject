@@ -5,8 +5,6 @@ dotenv.config();
 
 const { Pool } = pg;
 
-console.log(process.env.DATABASE_URL);
-
 // DATABASE_URL should be a full postgres connection string
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
